@@ -4,6 +4,7 @@
 
 const char COMMENTS_CHAR('#');
 
+//Method for generate big count of units
 void GenerateUnitFile(const string& inFileName, float inViewDist, float inSector, size_t inCount);
 
 bool ReadUnits(const string& inFileName, SGameParams& outGameParams, vector<SUnit>& outUnits)
@@ -47,13 +48,14 @@ bool ReadUnits(const string& inFileName, SGameParams& outGameParams, vector<SUni
 
 		SUnit unit(xp, yp, xd, yd);
 
+		//find minimal coordinates for all unit positions
 		if (outUnits.empty())
 		{
-			outGameParams.MinCorner = unit.Pos;
+			outGameParams.MinCorner = unit.GetPosition();
 		}
 		else
 		{
-			outGameParams.MinCorner = Vector2f::GetMinCorner(outGameParams.MinCorner, unit.Pos);
+			outGameParams.MinCorner = Vector2f::GetMinCorner(outGameParams.MinCorner, unit.GetPosition());
 		}
 
 		outUnits.push_back(unit);
@@ -63,22 +65,25 @@ bool ReadUnits(const string& inFileName, SGameParams& outGameParams, vector<SUni
 	return true;
 }
 
+//Write all visible counts for every unit
 void WriteUnitNeatCounts(const string& inFileName, const vector<SUnit>& inUnits)
 {
 	ofstream fs(inFileName, ios::out);
 	fs << "#sequence of visible count for sequence units from Units.txt" << endl;
 	for (const SUnit& u : inUnits)
 	{
-		fs << u.NearCount << endl;
+		fs << u.GetNearCount() << endl;
 	}
 }
 
+//Rand float in range []
 float GetRand(float v1, float v2)
 {
 	float r = (float)rand() / RAND_MAX; //[0; 1]
 	return v1 + (v2 - v1) * r;
 }
 
+//Method for generate big count of units
 void GenerateUnitFile(const string& inFileName, float inViewDist, float inSector, size_t inCount)
 {
 	ofstream fs(inFileName, ios::out);
@@ -87,7 +92,7 @@ void GenerateUnitFile(const string& inFileName, float inViewDist, float inSector
 	fs << "#sequence of units" << endl;
 	fs << "#2D_position(float;float) space 2D_direction(float;float)";
 
-	srand(time(0));
+	srand((unsigned int)time(0));
 	while (inCount > 0)
 	{
 		fs << endl;
